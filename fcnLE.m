@@ -1,4 +1,4 @@
-function lam = lyapunov(x,dt)
+function lam = fcnLE(x,dt)
 % calculate lyapunov coefficient of time series; from http://www.math.tamu.edu/~Michael.Pilant/math442/Matlab/examples.html
 
 [ndata nvars]=size(x);
