@@ -2,7 +2,7 @@
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
-addpath(genpath('../Jakub'));
+addpath(genpath('./input/'));
 
 %% Change to filepath with RAW files on local disk
 filepathName = './';
@@ -21,7 +21,7 @@ flagFiltered = 0;
 downsampleRate = 500;
 
 %% Get file(s)
-myFolderInfo = dir('*3.RAW'); 
+myFolderInfo = dir('./input/*.RAW'); 
 myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));
 
 %% Iterate through available files in the folder
