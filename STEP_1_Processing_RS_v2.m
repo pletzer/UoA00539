@@ -2,10 +2,7 @@
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
-addpath(genpath('./input/'));
-
-%% Change to filepath with RAW files on local disk
-filepathName = './';
+addpath(genpath('./'));
 
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
