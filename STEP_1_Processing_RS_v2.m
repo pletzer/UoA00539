@@ -14,7 +14,7 @@ flag1020 = 1;
 % If flagFiltered = 0 then FIR is not used.
 flagFiltered = 0; 
 
-%% Downsample rate
+%% Downsample rate only samples every x values to reduce computation time for testing. Make '1' for max.
 downsampleRate = 500;
 
 %% Get file(s)
