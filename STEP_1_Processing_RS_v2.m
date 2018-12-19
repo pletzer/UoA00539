@@ -1,6 +1,9 @@
 %% This script will calculate 3 measures for all files containing RS in the folder: filepathName
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
+%% This will suppress al Matlab warnings
+warning('off','all')
+
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
 addpath(genpath('./'));
 
