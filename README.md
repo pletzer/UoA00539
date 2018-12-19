@@ -6,7 +6,11 @@ Fractal Analysis of ASD
 You'll need to have
 
  * parfor toolbox installed
- * eeglab toolbox version `14_1_2b` installed. Follow the instructions at https://sccn.ucsd.edu/eeglab/download.php to install eeglab. 
+ * eeglab toolbox version `14_1_2b` installed. Follow the instructions at https://sccn.ucsd.edu/eeglab/download.php to install eeglab. The scripts expect the `eeglab14_1_2b` to exist at the same level as `STEP_1_Processing_RS_v2.m`. You can create a symbolic link
+```
+ln -s <directory-to-eeglab14_1_2b> eeglab14_1_2b
+``` 
+if this is not the case.
 
 ## How to run the resting state (RS) script 
 
