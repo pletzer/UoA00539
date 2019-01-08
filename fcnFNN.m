@@ -46,6 +46,4 @@ function Y=psr_deneme(x,m,tao,npoint)
 N = length(x);
 M = npoint;
 
-mInds = 1:M;
-iInds = 0:(m-1);
-Y = x(mInds + iInds'*tao)';
+Y = x((1:M) + (0:(m-1))'*tao)';
