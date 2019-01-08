@@ -1,4 +1,4 @@
-%% This script will calculate 3 measures for all files containing RS in the folder: filepathName
+% This script will calculate 3 measures for all files containing RS in the folder: filepathName
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
@@ -158,6 +158,7 @@ for iFile = 1:size(myFolderInfo,1)
         
         % Save output to a table
         resultMatT = resultMat';
+        disp([' Checksum: ', num2str(nansum(resultMat(:)))])
         tableOutput{iEvent, 4:4 + 129*8 - 1} = resultMatT(:)'; 
 
         % Save length of epoch
