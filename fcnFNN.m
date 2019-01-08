@@ -43,15 +43,9 @@ function Y=psr_deneme(x,m,tao,npoint)
 %npoint : total number of reconstructed vectors
 %Y : M x m matrix
 % author:"Merve Kizilkaya"
-N=length(x);
-if nargin == 4
-    M=npoint;
-else
-    M=N-(m-1)*tao;
-end
+N = length(x);
+M = npoint;
 
-Y=zeros(M,m); 
-
-for i=1:m
-    Y(:,i)=x((1:M)+(i-1)*tao)';
-end
+mInds = 1:M;
+iInds = 0:(m-1);
+Y = x(mInds + iInds'*tao)';
