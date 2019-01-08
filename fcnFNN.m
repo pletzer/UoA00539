@@ -15,9 +15,10 @@ for m = 1:mmax
     M = N - m*tao;
     % Phase space reconstruction
     Y = x((1:M) + (0:(m-1))'*tao)';
-    FNN(m,1)=0;
+    onesM1 = ones(M,1);
+    FNN(m, 1)=0;
     for n = 1:M
-        y0=ones(M,1)*Y(n,:);
+        y0 = onesM1 * Y(n,:);
         distance = sqrt(sum((Y-y0).^2, 2));
         [neardis nearpos] = sort(distance);
         
