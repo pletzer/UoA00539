@@ -160,6 +160,9 @@ for iFile = 1:size(myFolderInfo,1)
         resultMatT = resultMat';
         tableOutput{iEvent, 4:4 + 129*8 - 1} = resultMatT(:)'; 
 
+        % Perform a checksum and display
+        disp(['check sum:', num2str(sum(resultMat(:)))])
+        
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
         disp([' Event: ', num2str(iEvent)])
