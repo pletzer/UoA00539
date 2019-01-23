@@ -15,7 +15,12 @@ flag1020 = 1;
 flagFiltered = 0; 
 
 %% Downsample rate only samples every x values to reduce computation time for testing. Make '1' for max.
-downsampleRate = 500;
+if exist('downsampleRate', 'var')
+    disp(['downsampleRate = ', num2str(downsampleRate)])
+else
+    downsampleRate = 500; 
+    disp(['downsampleRate not set... will use ', num2str(downsampleRate)])
+end
 
 %% Get file(s)
 myFolderInfo = dir('*3.RAW'); 
