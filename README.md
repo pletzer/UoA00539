@@ -22,4 +22,8 @@ matlab -nodisplay -nojvm -nosplash < STEP_1_Processing_RS_v2.m
 ```
 This will produce x.xlsx. Open the file to see values for each measure (with some Nans for some false nearest neighbours). 
 
+```
+check nansum:208.0924
+```
 
+At the end of the run you will see the above.
