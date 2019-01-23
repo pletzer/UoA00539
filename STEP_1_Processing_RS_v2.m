@@ -18,7 +18,7 @@ flagFiltered = 0;
 downsampleRate = 500;
 
 %% Get file(s)
-myFolderInfo = dir('./input/*.RAW'); 
+myFolderInfo = dir('*3.RAW'); 
 myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));
 
 %% Iterate through available files in the folder
@@ -161,7 +161,7 @@ for iFile = 1:size(myFolderInfo,1)
         tableOutput{iEvent, 4:4 + 129*8 - 1} = resultMatT(:)'; 
 
         % Perform a checksum and display
-        disp(['check sum:', num2str(sum(resultMat(:)))])
+        disp(['check nansum:', num2str(nansum(resultMat(:)))])
         
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
