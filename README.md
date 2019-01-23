@@ -14,11 +14,11 @@ if this is not the case.
 
 ## How to run the resting state (RS) script 
 
-You'll need a RAW file, let's call it x.RAW, which contains EEG signal data (amplitudes vs time). Copy the RAW files to the `input/` directory. 
+You'll need a RAW file, let's call it x.RAW, which contains EEG signal data (amplitudes vs time). Copy the RAW files to the `./` directory. 
 
 To run the script, type
 ```
-matlab -nodisplay < STEP_1_Processing_RS_v2.m
+matlab -nodisplay -nojvm -nosplash < STEP_1_Processing_RS_v2.m
 ```
 This will produce x.xlsx. Open the file to see values for each measure (with some Nans for some false nearest neighbours). 
 
