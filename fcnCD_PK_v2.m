@@ -50,9 +50,7 @@ else
     iter=length(iv);
     vec=zeros(d,iter-d);
     for i=1:d
-        for j=1:iter-d
-            vec(i,j)=iv(i+j-1);
-        end
+        vec(i, :) = iv(i:i+iter-d-1);
     end
     l2=iter-d;
 end
