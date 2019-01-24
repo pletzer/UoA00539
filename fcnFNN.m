@@ -16,19 +16,18 @@ for m = 1:mmax
     % Phase space reconstruction
     Y = x((1:M) + (0:(m-1))'*tao)';
     onesM1 = ones(M,1);
-    %FNN(m, 1)=0;
     for n = 1:M
         y0 = onesM1 * Y(n,:);
-        dy = Y - y0;
-        distance = sqrt(sum( dy.*dy, 2) );
+        distance = sqrt(sum( (Y - y0).^2, 2) );
 
         [val, indx_ref] = min(distance);
-        % find the next closest value to location indx_ref
+
+        % find the next closest value/index to location indx_ref
         distance(indx_ref) = realmax;
         [neardis nearpos] = min(distance);
 
         D = abs(x(n+m*tao) - x(nearpos + m*tao));
-        R = sqrt(D.^2 + neardis.^2);
+        R = sqrt(D*D + neardis*neardis);
         if D/neardis > rtol || R/Ra > atol
              FNN(m,1) = FNN(m,1) + 1; 
         end
