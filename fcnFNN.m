@@ -21,10 +21,15 @@ for m = 1:mmax
         y0 = onesM1 * Y(n,:);
         dy = Y - y0;
         distance = sqrt(sum( dy.*dy, 2) );
-        [neardis nearpos] = sort(distance);
-        D = abs(x(n+m*tao) - x(nearpos(2) + m*tao));
-        R = sqrt(D.^2 + neardis(2).^2);
-        if D/neardis(2) > rtol || R/Ra > atol
+
+        [val, indx_ref] = min(distance);
+        % find the next closest value to location indx_ref
+        distance(indx_ref) = realmax;
+        [neardis nearpos] = min(distance);
+
+        D = abs(x(n+m*tao) - x(nearpos + m*tao));
+        R = sqrt(D.^2 + neardis.^2);
+        if D/neardis > rtol || R/Ra > atol
              FNN(m,1) = FNN(m,1) + 1; 
         end
     end
