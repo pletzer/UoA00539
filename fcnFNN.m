@@ -34,24 +34,3 @@ FNN=(FNN./FNN(1,1))*100;
 % title('Minimum embedding dimension with false nearest neighbours')
 % xlabel('Embedding dimension')
 % ylabel('The percentage of false nearest neighbours')
-
-function Y=psr_deneme(x,m,tao,npoint)
-%Phase space reconstruction
-%x : time series 
-%m : embedding dimension
-%tao : time delay
-%npoint : total number of reconstructed vectors
-%Y : M x m matrix
-% author:"Merve Kizilkaya"
-N=length(x);
-if nargin == 4
-    M=npoint;
-else
-    M=N-(m-1)*tao;
-end
-
-Y=zeros(M,m); 
-
-for i=1:m
-    Y(:,i)=x((1:M)+(i-1)*tao)';
-end
