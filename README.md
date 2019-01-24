@@ -20,10 +20,16 @@ To run the script, type
 ```
 matlab -nodisplay -nojvm -nosplash < STEP_1_Processing_RS_v2.m
 ```
-This will produce x.xlsx. Open the file to see values for each measure (with some Nans for some false nearest neighbours). 
-
+This will produce x.xlsx. Open the file to see values for each measure (with some Nans for some false nearest neighbours)
+and print out 
 ```
 check nansum:208.0924
 ```
 
-At the end of the run you will see the above.
+## Adjusting the sample rate
+
+The run time will increase significantly with smaller `downsampleRate` values. The default value is 500. Use any value >= 1 with 1 meaning
+no downsampling. To set `downsampleRate` to 200, for instance, type command:
+```
+ matlab -nodisplay -nojvm -nosplash -r "downsampleRate=200; STEP_1_Processing_RS_v2; exit"
+``` 
