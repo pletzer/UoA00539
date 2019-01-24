@@ -26,6 +26,11 @@ end
 myFolderInfo = dir('*3.RAW'); 
 myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));
 
+% time stats
+time_CD_PK = 0.;
+time_FNN = 0.;
+time_tot = tic;
+
 %% Iterate through available files in the folder
 for iFile = 1:size(myFolderInfo,1)
     disp([' File: ', num2str(iFile), ' ', myFolderInfo(iFile).name])   % File for processing
@@ -119,8 +124,10 @@ for iFile = 1:size(myFolderInfo,1)
             
             if sum(channelVec==jChan)==1
                  % Correlation dimension, PK
-                d = 10; 
-                [CD, PK, ~] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10);  
+                d = 10;
+	        tic;	
+                [CD, PK, ~] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10); 
+	        time_CD_PK = time_CD_PK + toc;	
 
                 % False nearest neighbors
                 tao = 10;
@@ -128,7 +135,9 @@ for iFile = 1:size(myFolderInfo,1)
                 rtol = 10;
                 atol = 2;
                 thresh = 0.5;
+		tic;
                 FNN = find(fcnFNN(downsample(tempDataAll(jChan,:),downsampleRate),tao,mmax,rtol,atol) < thresh,1);
+		time_FNN = time_FNN + toc;
                 if isempty(FNN)
                     FNN = nan;
                 end
@@ -166,7 +175,13 @@ for iFile = 1:size(myFolderInfo,1)
         tableOutput{iEvent, 4:4 + 129*8 - 1} = resultMatT(:)'; 
 
         % Perform a checksum and display
-        disp(['check nansum:', num2str(nansum(resultMat(:)))])
+        disp(['check nansum: ', num2str(nansum(resultMat(:)))])
+
+	% Time stats
+	disp([' CD_PK_v2 timing: ', num2str(time_CD_PK),...
+	      ' FNN timing: ', num2str(time_FNN),...
+	      ' total time: ', num2str(toc(time_tot)),...
+	      ' [secs]'])
         
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
