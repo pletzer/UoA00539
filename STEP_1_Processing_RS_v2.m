@@ -22,6 +22,9 @@ else
     disp(['downsampleRate not set... will use ', num2str(downsampleRate)])
 end
 
+%% Compile mex files
+mex computeDist.cpp
+
 %% Get file(s)
 myFolderInfo = dir('*3.RAW'); 
 myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));

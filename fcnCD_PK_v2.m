@@ -28,9 +28,11 @@ end
 if nargin<3
     plt=0;
 end
-if tt
-    tic;
-end
+%if tt
+%    tic;
+%end
+
+tic;
 if d==0
     vec=iv;
     s=size(vec);
@@ -54,42 +56,22 @@ else
     end
     l2=iter-d;
 end
-mx = 0;
-mn = 0;
+time_t1 = toc;
+
+tic;
 %toc;
 % Now add up how many pairs of points are distance apart
 % closer than epsilon and return epsilon and count in
-% the array ratio for later graphical analysis with Excel
+% the array ratio for later graphical analysis with Exce
 scales = 18;
 start = 1;
 ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
-dists=NaN(l2);
-for i=1:l2
-    for j=1:l2
-        sum = 0;
-        for k = 1:d
-            sum = sum + (vec(k,i) - vec(k,j)).^2;
-        end
-        sum = sqrt(sum);
-        if sum > mx
-            mx = sum;
-        end
-        if i==1 && j==2
-            mn = sum;
-        else
-            if (sum < mn) && (sum>0)
-                mn = sum;
-            end
-        end
-        if i==j
-            dists(i,j)=1e10;
-        else
-            dists(i,j)=sum;
-        end
-    end
-end
+[dists, mn, mx] = computeDists(l2, d, vec);
+time_t2 = toc;
+
+tic;
 fnnb=0;
 if usefnn
     md=min(dists);
@@ -104,8 +86,9 @@ if usefnn
         end
     end
 end
+time_t3 = toc;
 
-
+tic;
 while epsilon*mx>2*mn && n<scales
     if slow
         count = 0;
@@ -127,6 +110,9 @@ while epsilon*mx>2*mn && n<scales
     end
     epsilon = 1/(1.5^n);
 end
+time_t4 = toc;
+
+tic;
 ratio=ratio(:,1:n-1);
 [p q]=size(ratio);
 if plt
@@ -142,6 +128,8 @@ for i=1:n-2
     end
 end
 fd=ro(1);
-if tt
-    toc;
-end
+time_t5 = toc;
+disp(['fcnCD_PK_v2 times: ', num2str(time_t1), ' ', num2str(time_t2), ' ', num2str(time_t3), ' ', num2str(time_t4), ' ', num2str(time_t5)])
+%if tt
+%    toc;
+%end
