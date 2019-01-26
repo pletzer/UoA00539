@@ -34,17 +34,17 @@ void computeDist(int l2, int d, const double* vec, double* dists, int* mnPtr, in
 }
 
 /**
- * [dists, mn, mx] = computeDists(l2, d, vec);
+ * [dists, mn, mx] = computeDist(l2, d, vec);
  */
 
 void mexFunction(int nlhs, mxArray *plhs[], 
                  int nrhs, const mxArray *prhs[]) {
 
   // input
-  int l2 = *mxGetPr(prhs[0]);
-  int d = *mxGetPr(prhs[1]);
-  double* vec = mxGetPr(prhs[2]);
-  mexPrintf("l2 = %ld d = %ld \n", l2, d);
+  int l2 = (int) *mxGetPr(prhs[0]);
+  int d = (int) *mxGetPr(prhs[1]);
+  double* vec = (double*) mxGetPr(prhs[2]);
+  mexPrintf("*** in computeDist l2 = %ld d = %ld \n", l2, d);
 
   // output
   mxArray* dists = mxCreateDoubleMatrix(l2, l2, mxREAL);

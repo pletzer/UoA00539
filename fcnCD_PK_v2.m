@@ -68,7 +68,7 @@ start = 1;
 ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
-[dists, mn, mx] = computeDists(l2, d, vec);
+[dists, mn, mx] = computeDist(l2, d, vec);
 time_t2 = toc;
 
 tic;
