@@ -83,12 +83,9 @@ for i=1:l2
                 mn = sum;
             end
         end
-        if i==j
-            dists(i,j)=1e10;
-        else
-            dists(i,j)=sum;
-        end
+        dists(i, j)=sum;
     end
+    dists(i, i) = 1.e10;
 end
 fnnb=0;
 if usefnn
