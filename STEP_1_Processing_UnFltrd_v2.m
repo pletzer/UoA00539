@@ -2,15 +2,18 @@
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
-addpath(genpath('D:\Dropbox\119 FRACTAL ANALYSIS\119 CODE\119 MATLAB\eeglab14_1_1b'));
+addpath(genpath('./'));
 
 %% Change to filepath with files on local disk
-filepathName = 'D:\\Dropbox\\119 FRACTAL ANALYSIS\\119 CODE\\119 MATLAB\\';
+filepathName = 'D:\\Dropbox\\119 FRACTAL ANALYSIS\\119 CODE\\119 GIT\\';
 
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
 % If flag1020 = 0 then we process all channels according.
 flag1020 = 1; 
+
+%% Number of measures to calculate
+nMeasure = 9;
 
 %% Get file(s)
 myFolderInfo = dir([filepathName, '*.RAW']); 
@@ -62,9 +65,9 @@ for iFile = 1:size(myFolderInfo,1)
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LE')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_HFD')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MSE')) = {0}; 
-        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_DFA')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LZ')) = {0}; 
-        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_IVG')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_VG')) = {0}; 
     end
 
     %% Check type of file and then process it accordingly
@@ -114,7 +117,7 @@ for iFile = 1:size(myFolderInfo,1)
             end
 
             % Store results in this matrix for parallel processing purposes
-            resultMat = zeros(size(EEG.chanlocs,2),9);
+            resultMat = zeros(size(EEG.chanlocs,2),nMeasure);
             
             % Select channels accroding to flag1020
             channelVec = []; % Initiate the variable
@@ -154,18 +157,26 @@ for iFile = 1:size(myFolderInfo,1)
                 % MSE
                 [MSE, ~, ~] = fcnSE(tempDataAll(jChan,:));
 
-                % DFA
-                [DFA, ~] = fcnDFA(tempDataAll(jChan,:));
-
+                % MFDFA
+                scmin = 16;
+                scmax = 512;
+                scres = 6;
+                exponents = linspace(log2(scmin),log2(scmax),scres);
+                scale = round(2.^exponents);
+                q = linspace(-5,10,5);
+                m = 1;
+                [MFDFA, ~, ~, ~, ~] = fcnMFDFA(tempDataAll(jChan,:),scale,q,m,0);
+                MFDFA = mean(MFDFA);
+                
                 % LZ
                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
 
-                % IPSVG
-                maxK = 8;
-                IVG = fcnIPSVG(tempDataAll(jChan,:),maxK);
+                % PSVG
+                VG = fcnPSVG(tempDataAll(jChan,:));
                 
                 % Store results
-                resultMat(jChan,:) = [CD,PK,FNN,LE,HFD,MSE,DFA,LZ,IVG];
+                tempVec = [CD,PK,FNN,LE,HFD,MSE,MFDFA,LZ,VG];
+                resultMat(jChan,:) = tempVec(1:nMeasure);
             end
             
             % Show progress
@@ -177,7 +188,7 @@ for iFile = 1:size(myFolderInfo,1)
         
         % Save output to a table
         resultMatT = resultMat';
-        tableOutput{iEvent, 4:4 + 129*9 - 1} = resultMatT(:)'; 
+        tableOutput{iEvent, 4:4 + 129*nMeasure - 1} = resultMatT(:)'; 
 
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
@@ -188,15 +199,6 @@ for iFile = 1:size(myFolderInfo,1)
     tableOutputClean = tableOutput(:,4:end);
     tableOutputClean = tableOutputClean(:,~all(tableOutputClean{:,:}==0));
     tableOutput = [tableOutput(:,1:3), tableOutputClean];
-    writetable(tableOutput,strrep(filename,'.RAW','.UnFltrd.xlsx'),'Sheet',1,'Range','A1')
+    writetable(tableOutput,strrep(filename,'.RAW','UnFltrd.xlsx'),'Sheet',1,'Range','A1')
 
 end % loop for files
-
-
-
-
-
-
-
-
-

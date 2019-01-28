@@ -192,7 +192,7 @@ for iFile = 1:size(myFolderInfo,1)
     % Remove all columns which have only zeros
     tableOutput = tableOutput(:,4:end);
     tableOutput = tableOutput(:,~all(tableOutput{:,:}==0));
-    writetable(tableOutput,strrep(filename,'.RAW','.RS.xlsx'),'Sheet',1,'Range','A1')
+    writetable(tableOutput,strrep(filename,'.RAW','RS.xlsx'),'Sheet',1,'Range','A1')
 
 end % loop for files
 
