@@ -13,21 +13,25 @@ function [fd,pk,fnnb]=fcnCD_PK_v2(iv,d,plt,tt,fnntol,slow,usefnn)
 %you can run a script checking fd=d2(x(3),i) for i=2,3,4,5 to get a plateau
 %if you set d=0, the function will accept a multidimensional vector 
 %e.g d2(lorenz,0)
-if nargin<7
+%disp(['*** nargin = ', num2str(nargin), ' d = ', num2str(d), ' plt = ', num2str(plt), ' tt = ', num2str(tt), ' fnntol = ', num2str(fnntol), ' slow = ', num2str(slow), ' usefnn = ', num2str(usefnn)])
+disp(size(iv))
+disp(['*** nargin = ', num2str(nargin), ' d = ', num2str(d), ' plt = ', num2str(plt), ' tt = ', num2str(tt), ' fnntol = ', num2str(fnntol)])
+
+%if nargin<7
    usefnn=0;
-end
-if nargin<6
+%end
+%if nargin<6
     slow=0;
-end
-if nargin<5
-    fnntol=10;
-end
-if nargin<4
-    tt=1;
-end
-if nargin<3
-    plt=0;
-end
+%end
+%if nargin<5
+%    fnntol=10;
+%end
+%if nargin<4
+%    tt=1;
+%end
+%if nargin<3
+%    plt=0;
+%end
 if tt
     tic;
 end
