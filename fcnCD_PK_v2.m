@@ -71,7 +71,7 @@ n=start;
 epsilon = 1/(2^n);
 tic;
 dists=NaN(l2, l2);
-computeDists(l2, d, vec)
+computeDists(l2, d, vec, dists)
 for i=1:l2
     for j=1:l2
         sum = 0;
@@ -95,6 +95,7 @@ for i=1:l2
 end
 time_s = toc;
 disp(['time computing distances = ', num2str(time_s - tic)])
+
 fnnb=0;
 if usefnn
     md=min(dists);
