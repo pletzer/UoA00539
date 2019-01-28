@@ -7,7 +7,7 @@ addpath(genpath('./'));
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
 % If flag1020 = 0 then we process all channels accordingly.
-flag1020 = 1; 
+flag1020 = 1;  
 
 %% Flag indicating whether to use FIR
 % If flagFiltered = 1 then FIR is applied.
