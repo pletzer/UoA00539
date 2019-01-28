@@ -71,7 +71,11 @@ n=start;
 epsilon = 1/(2^n);
 tic;
 dists=NaN(l2, l2);
-computeDists(l2, d, vec, dists)
+computeDists(l2, d, vec, dists, mn, mx)
+disp(['------ dists=', num2str(nansum(dists(:)))])
+dists=NaN(l2, l2);
+mn = 0; 
+mx = 0;
 for i=1:l2
     for j=1:l2
         sum = 0;
@@ -93,6 +97,8 @@ for i=1:l2
     end
     dists(i, i) = 1.e10;
 end
+disp(['++++++ dists=', num2str(nansum(dists(:)))])
+
 time_s = toc;
 disp(['time computing distances = ', num2str(time_s - tic)])
 
