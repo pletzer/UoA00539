@@ -70,7 +70,8 @@ ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
 tic;
-dists=NaN(l2);
+dists=NaN(l2, l2);
+computeDists(l2, d, vec)
 for i=1:l2
     for j=1:l2
         sum = 0;
