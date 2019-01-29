@@ -66,10 +66,7 @@ ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
 dists=NaN(l2, l2);
-tic;
 [mn, mx] = computeDists(l2, d, vec, dists);
-time_s = toc;
-disp(['time computing distances = ', num2str(time_s - tic)])
 
 fnnb=0;
 if usefnn
