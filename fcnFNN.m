@@ -10,20 +10,26 @@ function [FNN] = fcnFNN(x,tao,mmax,rtol,atol)
 %atol=2;
 N=length(x);
 Ra=std(x,1);
+FNN = zeros(mmax, 1);
+for m = 1:mmax
+    M = N - m*tao;
+    % Phase space reconstruction
+    Y = x((1:M) + (0:(m-1))'*tao)';
+    onesM1 = ones(M,1);
+    for n = 1:M
+        y0 = onesM1 * Y(n,:);
+        distance = sqrt(sum( (Y - y0).^2, 2) );
 
-for m=1:mmax
-    M=N-m*tao;
-    Y=psr_deneme(x,m,tao,M);
-    FNN(m,1)=0;
-    for n=1:M
-        y0=ones(M,1)*Y(n,:);
-        distance=sqrt(sum((Y-y0).^2,2));
-        [neardis nearpos]=sort(distance);
-        
-        D=abs(x(n+m*tao)-x(nearpos(2)+m*tao));
-        R=sqrt(D.^2+neardis(2).^2);
-        if D/neardis(2) > rtol || R/Ra > atol
-             FNN(m,1)=FNN(m,1)+1;
+        [val, indx_ref] = min(distance);
+
+        % find the next closest value/index to location indx_ref
+        distance(indx_ref) = realmax;
+        [neardis nearpos] = min(distance);
+
+        D = abs(x(n+m*tao) - x(nearpos + m*tao));
+        R = sqrt(D*D + neardis*neardis);
+        if D/neardis > rtol || R/Ra > atol
+             FNN(m,1) = FNN(m,1) + 1; 
         end
     end
 end
@@ -34,24 +40,3 @@ FNN=(FNN./FNN(1,1))*100;
 % title('Minimum embedding dimension with false nearest neighbours')
 % xlabel('Embedding dimension')
 % ylabel('The percentage of false nearest neighbours')
-
-function Y=psr_deneme(x,m,tao,npoint)
-%Phase space reconstruction
-%x : time series 
-%m : embedding dimension
-%tao : time delay
-%npoint : total number of reconstructed vectors
-%Y : M x m matrix
-% author:"Merve Kizilkaya"
-N=length(x);
-if nargin == 4
-    M=npoint;
-else
-    M=N-(m-1)*tao;
-end
-
-Y=zeros(M,m); 
-
-for i=1:m
-    Y(:,i)=x((1:M)+(i-1)*tao)';
-end
