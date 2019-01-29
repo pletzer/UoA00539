@@ -71,7 +71,7 @@ tic;
 dists=NaN(l2, l2);
 mx = 0;
 mn = 0;
-computeDists(l2, d, vec, dists, mn, mx)
+[mn, mx] = computeDists(l2, d, vec, dists);
 disp(['------ dists=', num2str(nansum(dists(:))), ' mn=', num2str(mn), ' mx=', num2str(mx)])
 dists=NaN(l2, l2);
 mn = 0; 
