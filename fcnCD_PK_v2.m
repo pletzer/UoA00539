@@ -14,24 +14,22 @@ function [fd,pk,fnnb]=fcnCD_PK_v2(iv,d,plt,tt,fnntol,slow,usefnn)
 %if you set d=0, the function will accept a multidimensional vector 
 %e.g d2(lorenz,0)
 %disp(['*** nargin = ', num2str(nargin), ' d = ', num2str(d), ' plt = ', num2str(plt), ' tt = ', num2str(tt), ' fnntol = ', num2str(fnntol), ' slow = ', num2str(slow), ' usefnn = ', num2str(usefnn)])
-disp(size(iv))
-disp(['*** nargin = ', num2str(nargin), ' d = ', num2str(d), ' plt = ', num2str(plt), ' tt = ', num2str(tt), ' fnntol = ', num2str(fnntol)])
 
-%if nargin<7
+if nargin<7
    usefnn=0;
-%end
-%if nargin<6
+end
+if nargin<6
     slow=0;
-%end
-%if nargin<5
-%    fnntol=10;
-%end
-%if nargin<4
-%    tt=1;
-%end
-%if nargin<3
-%    plt=0;
-%end
+end
+if nargin<5
+    fnntol=10;
+end
+if nargin<4
+    tt=1;
+end
+if nargin<3
+    plt=0;
+end
 if tt
     tic;
 end
@@ -67,38 +65,9 @@ start = 1;
 ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
+dists=NaN(l2, l2);
 tic;
-dists=NaN(l2, l2);
-mx = 0;
-mn = 0;
 [mn, mx] = computeDists(l2, d, vec, dists);
-disp(['------ dists=', num2str(nansum(dists(:))), ' mn=', num2str(mn), ' mx=', num2str(mx)])
-dists=NaN(l2, l2);
-mn = 0; 
-mx = 0;
-for i=1:l2
-    for j=1:l2
-        sum = 0;
-        for k = 1:d
-            sum = sum + (vec(k,i) - vec(k,j)).^2;
-        end
-        sum = sqrt(sum);
-        if sum > mx
-            mx = sum;
-        end
-        if i==1 && j==2
-            mn = sum;
-        else
-            if (sum < mn) && (sum>0)
-                mn = sum;
-            end
-        end
-        dists(i, j)=sum;
-    end
-    dists(i, i) = 1.e10;
-end
-disp(['++++++ dists=', num2str(nansum(dists(:))), ' mn=', num2str(mn), ' mx=', num2str(mx)])
-
 time_s = toc;
 disp(['time computing distances = ', num2str(time_s - tic)])
 
