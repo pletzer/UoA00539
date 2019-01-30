@@ -40,7 +40,7 @@ no downsampling. To set `downsampleRate` to 200, for instance, type command:
 srun --hint=nomultithread --time=00:01:00 --cpus-per-task=10 --ntasks=1 --mem=1G \
    matlab -nodisplay -nojvm -nosplash -r "downsampleRate=100; STEP_1_Processing_RS_v2; exit"
 ```
-where `mem` is the total memory. You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
+where `cpus-per-task` is the number of threads and `mem` is the total memory. You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
 For example:
 ```
 sacct -j 8380550 --format=jobid,maxrss
@@ -50,4 +50,10 @@ sacct -j 8380550 --format=jobid,maxrss
 8380550.0       790288K
 ```
 indicating that the code took about 800MB. You want to set `mem` fairly tightly as this will let you slip into the queue faster. Allocate 4 times more wall clock time when you halve `downsampleRate`. The memory requirements don't increase significantly when halving `downsampleRate`. 
+
+Alternatively you can edit and submit
+```
+sbatch STEP_1_Processing_RS_v2.sl
+```
+Note: you will need to adjust `downsampleRate`.
  
