@@ -37,8 +37,17 @@ no downsampling. To set `downsampleRate` to 200, for instance, type command:
 ## Running under Slurm 
 
 ```
-srun --hint=nomultithread --time=01:00:00 --cpus-per-task=10 --ntasks=1 --mem=16G \
-matlab -nodisplay -nojvm -nosplash -r "downsampleRate=20; STEP_1_Processing_RS_v2; exit"
+srun --hint=nomultithread --time=00:01:00 --cpus-per-task=10 --ntasks=1 --mem=1G \
+   matlab -nodisplay -nojvm -nosplash -r "downsampleRate=100; STEP_1_Processing_RS_v2; exit"
 ```
-where `mem` is the total memory. You can use the `sacct` command to infer the maximum memory used by a job. You want to set `mem` fairly tightly as this will let you slip into the queue faster. 
+where `mem` is the total memory. You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
+For example:
+```
+sacct -j 8380550 --format=jobid,maxrss
+       JobID     MaxRSS 
+------------ ---------- 
+8380550                 
+8380550.0       790288K
+```
+indicating that the code took about 800MB. You want to set `mem` fairly tightly as this will let you slip into the queue faster. Allocate 4 times more wall clock time when you halve `downsampleRate`. The memory requirements don't increase significantly when halving `downsampleRate`. 
  
