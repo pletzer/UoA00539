@@ -33,3 +33,12 @@ no downsampling. To set `downsampleRate` to 200, for instance, type command:
 ```
  matlab -nodisplay -nojvm -nosplash -r "downsampleRate=200; STEP_1_Processing_RS_v2; exit"
 ``` 
+
+## Running under Slurm 
+
+```
+srun --hint=nomultithread --time=01:00:00 --cpus-per-task=10 --ntasks=1 --mem=16G \
+matlab -nodisplay -nojvm -nosplash -r "downsampleRate=20; STEP_1_Processing_RS_v2; exit"
+```
+where `mem` is the total memory. You can use the `sacct` command to infer the maximum memory used by a job. You want to set `mem` fairly tightly as this will let you slip into the queue faster. 
+ 
