@@ -80,33 +80,7 @@ if usefnn
 end
 
 scales = 18;
-start = 1;
-ratio = zeros(2,scales);
-n = start;
-epsilon = 1/(2^n);
-mx2 = epsilon*mx;
-while mx2 > 2*mn && n < scales
-    %count = length(find(dists < mx2));
-    count = 0;
-    for i = 1:l2
-        for j = 1:l2
-            if dists(i, j) < mx2
-                count = count + 1;
-            end
-        end
-    end
-    if count > 0
-        ratio(1, n) = epsilon;
-        ratio(2, n) = count;
-        n = n+1;
-    end
-    epsilon = 1/(1.5^n);
-    mx2 = epsilon*mx;
-end
-disp(['---checksum ratio = ', num2str(sum(ratio(1,:))), ',', num2str(sum(ratio(2,:)))])
-
 [ratio, n] = computeRatio(mn, mx, scales, dists);
-disp(['+++checksum ratio = ', num2str(sum(ratio(1,:))), ',', num2str(sum(ratio(2,:)))])
 
 ratio=ratio(:,1:n-1);
 

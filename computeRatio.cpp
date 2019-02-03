@@ -30,12 +30,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   while (mx2 > 2*mn && n < scales) {
     size_t count = 0;
-    for (size_t i = 0; i < l2; ++i) {
-        for (size_t j = 0; j < l2; ++j) {
-            if (dists[j + i*l2] < mx2) {
+    for (size_t i = 0; i < l2*l2; ++i) {
+      if (dists[i] < mx2) {
                 count++;
-            }
-        }
+      }
     }
     if (count > 0) {
         int nm1 = n - 1;
