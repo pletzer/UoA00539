@@ -60,11 +60,7 @@ end
 % Now add up how many pairs of points are distance apart
 % closer than epsilon and return epsilon and count in
 % the array ratio for later graphical analysis with Excel
-scales = 18;
-start = 1;
-ratio = zeros(3,scales);
-n=start;
-epsilon = 1/(2^n);
+
 dists=NaN(l2, l2);
 [mn, mx] = computeDists(l2, d, vec, dists);
 
@@ -83,25 +79,18 @@ if usefnn
     end
 end
 
-
-while epsilon*mx>2*mn && n<scales
-    if slow
-        count = 0;
-        for i=1:l2
-            for j=1:l2    
-                if dists(i,j) < epsilon*mx
-                    count = count + 1;
-                end
-            end
-        end
-    else
-        mx2=epsilon*mx;
-        count=length(find(dists<mx2));
-    end
-    if count>0
-    ratio(1,n) = epsilon;
-    ratio(2,n) = count;
-    n=n+1;
+scales = 18;
+start = 1;
+ratio = zeros(2,scales);
+n = start;
+epsilon = 1/(2^n);
+while epsilon*mx > 2*mn && n < scales
+    mx2 = epsilon*mx;
+    count = length(find(dists < mx2));
+    if count > 0
+        ratio(1,n) = epsilon;
+        ratio(2,n) = count;
+        n = n+1;
     end
     epsilon = 1/(1.5^n);
 end
