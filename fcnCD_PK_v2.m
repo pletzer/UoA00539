@@ -105,7 +105,7 @@ while mx2 > 2*mn && n < scales
 end
 disp(['---checksum ratio = ', num2str(sum(ratio(1,:))), ',', num2str(sum(ratio(2,:)))])
 
-[ratio] = computeRatio(mn, mx, scales, dists);
+[ratio, n] = computeRatio(mn, mx, scales, dists);
 disp(['+++checksum ratio = ', num2str(sum(ratio(1,:))), ',', num2str(sum(ratio(2,:)))])
 
 ratio=ratio(:,1:n-1);
