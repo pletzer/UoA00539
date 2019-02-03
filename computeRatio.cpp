@@ -20,7 +20,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
   size_t l2 = (size_t) dims[0];
 
   // output [ratio, n]
-  plhs[0]= mxCreateDoubleMatrix(2, scales, mxREAL);
+  const size_t two = 2;
+  plhs[0]= mxCreateDoubleMatrix(two, scales, mxREAL);
   double* ratio = (double*) mxGetPr(plhs[0]);
 
   int n = 1;
@@ -31,14 +32,15 @@ void mexFunction(int nlhs, mxArray *plhs[],
     size_t count = 0;
     for (size_t i = 0; i < l2; ++i) {
         for (size_t j = 0; j < l2; ++j) {
-            if (dists[i + j*l2] < mx2) {
+            if (dists[j + i*l2] < mx2) {
                 count++;
             }
         }
     }
     if (count > 0) {
-        ratio[0 + (n - 1)*2] = epsilon;
-        ratio[1 + (n - 1)*2] = count;
+        int nm1 = n - 1;
+        ratio[0 + nm1*two] = epsilon;
+        ratio[1 + nm1*two] = count;
         n++;
     }
     epsilon = std::pow(1.5, -n);
