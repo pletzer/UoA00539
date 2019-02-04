@@ -13,6 +13,8 @@ function [fd,pk,fnnb]=fcnCD_PK_v2(iv,d,plt,tt,fnntol,slow,usefnn)
 %you can run a script checking fd=d2(x(3),i) for i=2,3,4,5 to get a plateau
 %if you set d=0, the function will accept a multidimensional vector 
 %e.g d2(lorenz,0)
+%disp(['*** nargin = ', num2str(nargin), ' d = ', num2str(d), ' plt = ', num2str(plt), ' tt = ', num2str(tt), ' fnntol = ', num2str(fnntol), ' slow = ', num2str(slow), ' usefnn = ', num2str(usefnn)])
+
 if nargin<7
    usefnn=0;
 end
@@ -50,14 +52,10 @@ else
     iter=length(iv);
     vec=zeros(d,iter-d);
     for i=1:d
-        for j=1:iter-d
-            vec(i,j)=iv(i+j-1);
-        end
+        vec(i, :) = iv(i:i+iter-d-1);
     end
     l2=iter-d;
 end
-mx = 0;
-mn = 0;
 %toc;
 % Now add up how many pairs of points are distance apart
 % closer than epsilon and return epsilon and count in
@@ -67,31 +65,9 @@ start = 1;
 ratio = zeros(3,scales);
 n=start;
 epsilon = 1/(2^n);
-dists=NaN(l2);
-for i=1:l2
-    for j=1:l2
-        sum = 0;
-        for k = 1:d
-            sum = sum + (vec(k,i) - vec(k,j)).^2;
-        end
-        sum = sqrt(sum);
-        if sum > mx
-            mx = sum;
-        end
-        if i==1 && j==2
-            mn = sum;
-        else
-            if (sum < mn) && (sum>0)
-                mn = sum;
-            end
-        end
-        if i==j
-            dists(i,j)=1e10;
-        else
-            dists(i,j)=sum;
-        end
-    end
-end
+dists=NaN(l2, l2);
+[mn, mx] = computeDists(l2, d, vec, dists);
+
 fnnb=0;
 if usefnn
     md=min(dists);
