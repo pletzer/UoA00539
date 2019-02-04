@@ -32,7 +32,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     size_t count = 0;
     for (size_t i = 0; i < l2*l2; ++i) {
       if (dists[i] < mx2) {
-                count++;
+        count++;
       }
     }
     if (count > 0) {
