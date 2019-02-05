@@ -1,4 +1,4 @@
-%% This script will calculate 3 measures for all files containing RS in the folder: filepathName
+%% This script will calculate 5 measures for all files containing RS in the folder: filepathName
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
 %% This will suppress al Matlab warnings
@@ -19,6 +19,9 @@ flag1020 = 1;
 % If flagFiltered = 1 then FIR is applied.
 % If flagFiltered = 0 then FIR is not used.
 flagFiltered = 0; 
+
+%% Remove warnings
+warning('off');
 
 %% Downsample rate only samples every x values to reduce computation time for testing. Make '1' for max.
 if exist('downsampleRate', 'var')
@@ -169,8 +172,13 @@ for iFile = 1:size(myFolderInfo,1)
                 scale = round(2.^exponents);
                 q = linspace(-5,10,5);
                 m = 1;
-                [MFDFA, ~, ~, ~, ~] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
-                MFDFA = mean(MFDFA);
+                [~, ~, ~, MFDFA, ~] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
+                %% Replace Infand -Inf with NaNs
+                MFDFA(find(MFDFA==Inf)) = NaN;
+                MFDFA(find(MFDFA==-Inf)) = NaN;
+                
+                %% Calculate mean acros non-nan values.
+                MFDFA = nanmean(MFDFA);
 % 
 %                 % LZ
 %                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
