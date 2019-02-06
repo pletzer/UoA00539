@@ -1,5 +1,8 @@
-%% This script will calculate 3 measures for all files containing RS in the folder: filepathName
+%% This script will calculate 5 measures for all files containing RS in the folder: filepathName
 % All files fcn*.m contain Matlab functions used in calculating measures.
+
+%% This will suppress al Matlab warnings
+warning('off','all')
 
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
 addpath(genpath('./'));
@@ -11,18 +14,21 @@ mex computeRatio.cpp
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
 % If flag1020 = 0 then we process all channels accordingly.
-flag1020 = 1; 
+flag1020 = 1;  
 
 %% Flag indicating whether to use FIR
 % If flagFiltered = 1 then FIR is applied.
 % If flagFiltered = 0 then FIR is not used.
 flagFiltered = 0; 
 
+%% Remove warnings
+warning('off');
+
 %% Downsample rate only samples every x values to reduce computation time for testing. Make '1' for max.
 if exist('downsampleRate', 'var')
     disp(['downsampleRate = ', num2str(downsampleRate)])
 else
-    downsampleRate = 500; 
+    downsampleRate = 100; 
     disp(['downsampleRate not set... will use ', num2str(downsampleRate)])
 end
 
@@ -79,12 +85,13 @@ for iFile = 1:size(myFolderInfo,1)
     for jChan=1:size(EEG.chanlocs,2)
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_CD')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_PK')) = {0}; 
-        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_FNN')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_FNNB')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LE')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_HFD')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MSE')) = {0}; 
-        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_DFA')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LZ')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_VG')) = {0}; 
     end
 
     %% We process EOEC only 
@@ -112,7 +119,7 @@ for iFile = 1:size(myFolderInfo,1)
             end
 
             % Store results in this matrix for parallel processing purposes
-            resultMat = zeros(size(EEG.chanlocs,2),8);
+            resultMat = zeros(size(EEG.chanlocs,2),9);
             
             % Select channels accroding to flag1020
             channelVec = []; % Initiate the variable
@@ -129,8 +136,10 @@ for iFile = 1:size(myFolderInfo,1)
             if sum(channelVec==jChan)==1
                  % Correlation dimension, PK
                 d = 10;
-	        tic;	
-                [CD, PK, ~] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10); 
+                
+                tic;
+                
+                [CD, PK, FNNB] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10,0,1); 
 	        time_CD_PK = time_CD_PK + toc;	
 
                 % False nearest neighbors
@@ -140,11 +149,11 @@ for iFile = 1:size(myFolderInfo,1)
                 atol = 2;
                 thresh = 0.5;
 		tic;
-                FNN = find(fcnFNN(downsample(tempDataAll(jChan,:),downsampleRate),tao,mmax,rtol,atol) < thresh,1);
-		time_FNN = time_FNN + toc;
-                if isempty(FNN)
-                    FNN = nan;
-                end
+%                 FNN = find(fcnFNN(downsample(tempDataAll(jChan,:),downsampleRate),tao,mmax,rtol,atol) < thresh,1);
+% 		time_FNN = time_FNN + toc;
+%                 if isempty(FNN)
+%                     FNN = nan;
+%                 end
 
 %                 % Lyapunov Spectrum
 %                 LE = fcnLE(tempDataAll(jChan,:)',1);
@@ -156,15 +165,34 @@ for iFile = 1:size(myFolderInfo,1)
 %                 % MSE
 %                 [MSE, ~, ~] = fcnSE(tempDataAll(jChan,:));
 % 
-%                 % DFA
-%                 [DFA, ~] = fcnDFA(tempDataAll(jChan,:));
+                % MFDFA
+                scmin = 16;
+                scmax = 512;
+                scres = 6;
+                exponents = linspace(log2(scmin),log2(scmax),scres);
+                scale = round(2.^exponents);
+                q = linspace(-5,10,5);
+                m = 1;
+                [~, ~, ~, MFDFA, ~] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
+                %% Replace Infand -Inf with NaNs
+                MFDFA(find(MFDFA==Inf)) = NaN;
+                MFDFA(find(MFDFA==-Inf)) = NaN;
+                
+                %% Calculate mean acros non-nan values.
+                MFDFA = nanmean(MFDFA);
 % 
 %                 % LZ
 %                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
                 
+                % PSVG
+                VG = fcnPSVG(downsample(tempDataAll(jChan,:),downsampleRate)');
+                
                 % Store results
-                LE = 0; HFD = 0; MSE = 0; DFA = 0; LZ = 0;
-                resultMat(jChan,:) = [CD,PK,FNN,LE,HFD,MSE,DFA,LZ];
+                LE = 0; HFD = 0; MSE = 0; LZ = 0; 
+                if FNNB==0
+                    FNNB = 1.0000e-16; % To avoid deleting the column later in the code
+                end
+                resultMat(jChan,:) = [CD,PK,FNNB,LE,HFD,MSE,MFDFA,LZ,VG];
             end
             
             % Show progress
@@ -176,7 +204,7 @@ for iFile = 1:size(myFolderInfo,1)
         
         % Save output to a table
         resultMatT = resultMat';
-        tableOutput{iEvent, 4:4 + 129*8 - 1} = resultMatT(:)'; 
+        tableOutput{iEvent, 4:4 + 129*9 - 1} = resultMatT(:)'; 
 
         % Perform a checksum and display
         disp(['check nansum: ', num2str(nansum(resultMat(:)))])
@@ -193,10 +221,11 @@ for iFile = 1:size(myFolderInfo,1)
     end % loop for events
 
     %% Save output to Excel spreadsheet for checking and futher processing
-    % Remove all columns which have only zeros
+    % Leave only columns which have at least one non-zero value
     tableOutput = tableOutput(:,4:end);
     tableOutput = tableOutput(:,~all(tableOutput{:,:}==0));
-    writetable(tableOutput,strrep(filename,'.RAW','.RS.xlsx'),'Sheet',1,'Range','A1')
+    
+    writetable(tableOutput,strrep(filename,'.RAW','RS.xlsx'),'Sheet',1,'Range','A1')
 
 end % loop for files
 
