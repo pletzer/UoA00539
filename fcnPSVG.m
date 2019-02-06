@@ -20,18 +20,19 @@ for a=1:ln
          end
     end
 end
-kk=1:ln;
-%loglog(kk,P); %do a log-log plot of the distribution
-if opt==1
-    plot(log(kk),log(P),'.');
-end
+
 for x=2:ln %choose an interval in P with no zeros
-    if P(x)==0
-        break;
-    end
+  if P(x)==0
+    break;
+  end
 end
+
 p=polyfit(log(2:x-1),log(P(2:x-1)),1); %find the power law slope
+
 if opt==1
+    kk=1:ln;
+    %loglog(kk,P); %do a log-log plot of the distribution
+    plot(log(kk),log(P),'.');
     hold on
     x=[log(kk(1)):0.1:log(kk(length(kk)))];
     plot(x,p(1)*x+p(2),'r');
@@ -39,4 +40,5 @@ if opt==1
     hold off
     fprintf('Slope=%4.4f\n',p(1));
 end
+
 o=-p(1);
