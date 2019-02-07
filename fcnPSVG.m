@@ -5,13 +5,12 @@ if nargin<2
     opt=0;
 end
 
-ln=length(y);
-
 [P, x] = countGraphEdges(y);
 
 p=polyfit(log(2:x-1),log(P(2:x-1)),1); %find the power law slope
 
 if opt==1
+    ln=length(y);
     kk=1:ln;
     %loglog(kk,P); %do a log-log plot of the distribution
     plot(log(kk),log(P),'.');
