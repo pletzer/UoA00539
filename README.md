@@ -45,7 +45,6 @@ where `cpus-per-task` is the number of threads and `mem` is the total memory. Us
 squeue -u $USER
 ```
 to check progress of job.
-```
 You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
 For example:
 ```
