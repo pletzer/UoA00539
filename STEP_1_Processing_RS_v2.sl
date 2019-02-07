@@ -9,9 +9,9 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --mem=1G
-#SBATCH --hint=nomultithread
+##SBATCH --hint=nomultithread
 
-DOWNSAMPLE_RATE=100
+DOWNSAMPLE_RATE=50
 
 # change to "module load MATLAB" on mahuika
 module load MATLAB
