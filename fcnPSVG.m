@@ -3,29 +3,11 @@ function o=fcnPSVG(y,opt)
 % opt=1 plots the log-log slope and point values
 if nargin<2
     opt=0;
-end        
-ln=length(y);
-P=zeros(1,ln);
-for a=1:ln
-    for b=a+2:ln
-         fl=1;
-         for c=a+1:b-1
-            if y(c)>=y(b)+(y(a)-y(b))*(b-c)/(b-a)
-                fl=0;
-                break;
-            end
-         end
-         if fl %add one to the graph edges of length b-a
-             P(b-a)=P(b-a)+1;
-         end
-    end
 end
 
-for x=2:ln %choose an interval in P with no zeros
-  if P(x)==0
-    break;
-  end
-end
+ln=length(y);
+
+[P, x] = countGraphEdges(y);
 
 p=polyfit(log(2:x-1),log(P(2:x-1)),1); %find the power law slope
 

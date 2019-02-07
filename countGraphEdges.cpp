@@ -4,44 +4,39 @@
 #include <limits>
 
 /**
- * [mn, mx] = computeDists(l2, d, vec, dists);
+ * [P, x] = countGraphEdges(y);
  */
 
 void mexFunction(int nlhs, mxArray *plhs[], 
                  int nrhs, const mxArray *prhs[]) {
 
-  // [P, x] = countGraphEdges(y)
-  double* y = (double*) mxGetPr(prhs[0]);
+  // input: y 
+  float* y = (float*) mxGetPr(prhs[0]);
   size_t ln = mxGetNumberOfElements(prhs[0]);
 
-  plhs[0]= mxCreateDoubleMatrix(1, ln, mxREAL);
+  plhs[0] = mxCreateDoubleMatrix(1, ln, mxREAL);
   double* P = (double*) mxGetPr(plhs[0]);
 
-  for (size_t a = 1; a <= ln; ++a) {
-    size_t am1 = a - 1;
-    for (size_t b = a + 2; b <= ln; ++b) {
-      size_t bm1 = b - 1;
-      bool flg = true;
-      for (size_t c = a + 1; c <= b - 1; ++c) {
-        size_t cm1 = c - 1;
-        if ( y[cm1] >= y[bm1] + (y[am1] - y[bm1])*(b - c)/(b - a) ) {
-          flg = false;
-          break;
-        }
-      }
-      if (flg) {
-        P[b - a]++;
-      }
+for (size_t a = 1; a <= ln; ++a) {
+    for (size_t b = a+2; b <= ln; ++b) {
+         int fl=1;
+         for (size_t c = a+1; c <= b-1; ++c) {
+            if (y[c-1] >= y[b-1] + (y[a-1] - y[b-1])*(float)(b-c)/((float)(b-a))) {
+                fl=0;
+                break;
+            }
+         }
+         if (fl) //add one to the graph edges of length b-a
+             P[b-a-1] = P[b-a-1] + 1;
     }
-  }
+}
 
-  size_t x;
-  // choose an interval in P with no zeros
-  for (x = 2; x <= ln; ++x) {
-    if (P[x - 1] == 0) {
-      break;
-    }
-  }
+size_t x;
+for (x=2; x <= ln; ++x) { //choose an interval in P with no zeros
+  if (P[x-1] == 0)
+    break;
+}
 
-  plhs[1] = mxCreateDoubleScalar(x);
+  // output: [P, x]
+  plhs[1] = mxCreateDoubleScalar( (double) x);
 }
