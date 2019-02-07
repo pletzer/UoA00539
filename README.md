@@ -28,10 +28,10 @@ check nansum:208.0924
 
 ## Adjusting the sample rate
 
-The run time will increase significantly with smaller `downsampleRate` values. The default value is 500. Use any value >= 1 with 1 meaning
-no downsampling. To set `downsampleRate` to 200, for instance, type command:
+The run time will increase significantly with smaller `downsampleRate` values. The default value is 100. Use any value >= 1 with 1 meaning
+no downsampling. To set `downsampleRate` to 50, for instance, type command:
 ```
- matlab -nodisplay -nojvm -nosplash -r "downsampleRate=200; STEP_1_Processing_RS_v2; exit"
+ matlab -nodisplay -nojvm -nosplash -r "downsampleRate=50; STEP_1_Processing_RS_v2; exit"
 ``` 
 
 ## Running under Slurm 
@@ -40,7 +40,13 @@ no downsampling. To set `downsampleRate` to 200, for instance, type command:
 srun --hint=nomultithread --time=00:01:00 --cpus-per-task=10 --ntasks=1 --mem=1G \
    matlab -nodisplay -nojvm -nosplash -r "downsampleRate=100; STEP_1_Processing_RS_v2; exit"
 ```
-where `cpus-per-task` is the number of threads and `mem` is the total memory. You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
+where `cpus-per-task` is the number of threads and `mem` is the total memory. Use
+```
+squeue -u $USER
+```
+to check progress of job.
+```
+You can use the `sacct -j <jobid> --format=jobid,maxrss` command to infer the maximum memory used by a job from the `MaxRSS` column. 
 For example:
 ```
 sacct -j 8380550 --format=jobid,maxrss
