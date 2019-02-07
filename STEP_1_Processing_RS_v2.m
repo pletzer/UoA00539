@@ -9,6 +9,7 @@ addpath(genpath('./'));
 
 %% Compile mex code
 mex computeDists.cpp
+mex computeRatio.cpp
 
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
