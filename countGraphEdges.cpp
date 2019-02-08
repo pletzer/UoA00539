@@ -40,18 +40,6 @@ void mexFunction(int nlhs, mxArray *plhs[],
   auto it = std::find(&P[1], &P[ln], 0.0);
   size_t x = std::distance(&P[0], it) + 1;
 
-  /*
-  mexPrintf("---x = %ld\n", x);
-
-
-  //size_t x;
-  for (x=2; x <= ln; ++x) { //
-    if (P[x-1] == 0)
-      break;
-  }
-  mexPrintf("+++x = %ld\n", x);
-  */
-
   // output: [P, x]
   plhs[1] = mxCreateDoubleScalar((double) x);
 }
