@@ -25,11 +25,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
       float coeff = (ya - yb) / bma;
       double fl = 1;
       size_t cm1 = am1 + 1;
-      while (cm1 <= bm1 - 1) {
+      while (cm1 <= bm1 - 1 && fl) {
         float bmc = (float)(bm1) - (float)(cm1);
         if (y[cm1] >= yb + coeff * bmc) {
             fl = 0;
-            break;
         }
         cm1++;
       }
