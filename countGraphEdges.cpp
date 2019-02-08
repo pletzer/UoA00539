@@ -19,20 +19,23 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   for (size_t a = 1; a <= ln; ++a) {
     size_t am1 = a - 1;
+    float ya = y[am1];
     for (size_t b = a + 2; b <= ln; ++b) {
-      float bma = (float)(b) - (float)(a);
       size_t bm1 = b - 1;
-      bool fl = true;
+      float yb = y[bm1];
+      float bma = (float)(b) - (float)(a);
+      float coeff = (ya - yb) / bma;
+      double fl = 1;
       for (size_t c = a + 1; c <= b - 1; ++c) {
         size_t cm1 = c - 1;
         float bmc = (float)(b) - (float)(c);
-        if (y[cm1] >= y[bm1] + (y[am1] - y[bm1]) * bmc / bma) {
-            fl = false;
+        if (y[cm1] >= y[bm1] + coeff * bmc) {
+            fl = 0;
             break;
         }
       }
-      if (fl) //add one to the graph edges of length b-a
-        P[b-a-1]++;
+      //add one to the graph edges of length b-a
+      P[bm1-a] += fl;
     }
   }
 
