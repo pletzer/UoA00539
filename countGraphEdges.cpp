@@ -19,8 +19,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   for (size_t a = 1; a <= ln; ++a) {
     size_t am1 = a - 1;
-    float bma = (float)(b) - (float)(a);
     for (size_t b = a + 2; b <= ln; ++b) {
+      float bma = (float)(b) - (float)(a);
       size_t bm1 = b - 1;
       bool fl = true;
       for (size_t c = a + 1; c <= b - 1; ++c) {
