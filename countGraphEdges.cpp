@@ -26,13 +26,15 @@ void mexFunction(int nlhs, mxArray *plhs[],
       float bma = (float)(b) - (float)(a);
       float coeff = (ya - yb) / bma;
       double fl = 1;
-      for (size_t c = a + 1; c <= b - 1; ++c) {
+      size_t c = a + 1;
+      while (c <= b - 1) {
         size_t cm1 = c - 1;
         float bmc = (float)(b) - (float)(c);
         if (y[cm1] >= y[bm1] + coeff * bmc) {
             fl = 0;
             break;
         }
+        c++;
       }
       //add one to the graph edges of length b-a
       P[bm1-a] += fl;
