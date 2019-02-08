@@ -17,8 +17,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   plhs[0] = mxCreateDoubleMatrix(1, ln, mxREAL);
   double* P = (double*) mxGetPr(plhs[0]);
 
-  for (size_t a = 1; a <= ln; ++a) {
-    size_t am1 = a - 1;
+  for (size_t am1 = 0; am1 < ln; ++am1) {
     float ya = y[am1];
     for (size_t bm1 = am1 + 2; bm1 < ln; ++bm1) {
       float yb = y[bm1];
