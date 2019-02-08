@@ -20,8 +20,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   for (size_t a = 1; a <= ln; ++a) {
     size_t am1 = a - 1;
     float ya = y[am1];
-    for (size_t b = a + 2; b <= ln; ++b) {
-      size_t bm1 = b - 1;
+    for (size_t bm1 = am1 + 2; bm1 < ln; ++bm1) {
       float yb = y[bm1];
       float bma = (float)(bm1) - (float)(am1);
       float coeff = (ya - yb) / bma;
