@@ -29,7 +29,7 @@ warning('off');
 if exist('downsampleRate', 'var')
     disp(['downsampleRate = ', num2str(downsampleRate)])
 else
-    downsampleRate = 100; 
+    downsampleRate = 25; 
     disp(['downsampleRate not set... will use ', num2str(downsampleRate)])
 end
 
@@ -91,11 +91,13 @@ for iFile = 1:size(myFolderInfo,1)
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LE')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_HFD')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MSE')) = {0}; 
-        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA_DQFIRST')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA_MAXDQ')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA_DQLAST')) = {0}; 
+        tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_MFDFA_MAXMIN')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_LZ')) = {0}; 
         tableOutput(1, strcat(EEG.chanlocs(jChan).labels,'_VG')) = {0}; 
     end
-
     %% We process EOEC only 
     % The following epochs are used:
     % [DIN0 DIN0], [DIN1 - 30000 DIN1 + 30000], [DIN0 DIN1] and [DIN1 DIN0]
@@ -121,7 +123,7 @@ for iFile = 1:size(myFolderInfo,1)
             end
 
             % Store results in this matrix for parallel processing purposes
-            resultMat = zeros(size(EEG.chanlocs,2),9);
+            resultMat = zeros(size(EEG.chanlocs,2),12);
             
             % Select channels accroding to flag1020
             channelVec = []; % Initiate the variable
@@ -166,23 +168,24 @@ for iFile = 1:size(myFolderInfo,1)
 %                 [MSE, ~, ~] = fcnSE(tempDataAll(jChan,:));
 % 
                 % MFDFA
-                scmin = 16;
-                scmax = 512;
-                scres = 6;
-                exponents = linspace(log2(scmin),log2(scmax),scres);
-                scale = round(2.^exponents);
-                q = linspace(-5,10,5);
-                m = 1;
-		tic;
-                [~, ~, ~, MFDFA, ~] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
-                %% Replace Infand -Inf with NaNs
-                MFDFA(find(MFDFA==Inf)) = NaN;
-                MFDFA(find(MFDFA==-Inf)) = NaN;
+                scmin=16;
+                scmax=1024;
+                scres=19;
+                exponents=linspace(log2(scmin),log2(scmax),scres);
+                scale=round(2.^exponents);
+                q=linspace(-5,20,101);
+                m=2;
                 
-                %% Calculate mean acros non-nan values.
-                MFDFA = nanmean(MFDFA);
-		time_MFDFA = time_MFDFA + toc;
-% 
+         tic;  
+                [Hq,tq,hq,Dq,Fq] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
+        time_MFDFA = time_MFDFA + toc;
+                
+                MFDFA = zeros(1,4);
+                MFDFA(1) = Dq(1);
+                MFDFA(2) = max(Dq);
+                MFDFA(3) = Dq(end);
+                MFDFA(4) = max(hq)-min(hq);
+                
 %                 % LZ
 %                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
                 
@@ -208,7 +211,7 @@ for iFile = 1:size(myFolderInfo,1)
         
         % Save output to a table
         resultMatT = resultMat';
-        tableOutput{iEvent, 4:4 + 129*9 - 1} = resultMatT(:)'; 
+        tableOutput{iEvent, 4:4 + 129*12 - 1} = resultMatT(:)'; 
 
         % Perform a checksum and display
         disp(['check nansum: ', num2str(nansum(resultMat(:)))])
