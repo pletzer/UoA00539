@@ -1,8 +1,16 @@
 %% This script will calculate 5 measures for all files containing RS in the folder: filepathName
 % All files fcn*.m contain Matlab functions used in calculating measures.
 
+%% This will suppress al Matlab warnings
+warning('off','all')
+
 %% Add path to use EEGLAB Matlab functions; Change path to your local copy of EEGLab
 addpath(genpath('./'));
+
+%% Compile mex code
+mex computeDists.cpp
+mex computeRatio.cpp
+mex countGraphEdges.cpp
 
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
@@ -31,7 +39,8 @@ myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));
 
 % time stats
 time_CD_PK = 0.;
-time_FNN = 0.;
+time_MFDFA = 0.;
+time_PSVG = 0.;
 time_tot = tic;
 
 %% Iterate through available files in the folder
@@ -141,9 +150,7 @@ for iFile = 1:size(myFolderInfo,1)
                 rtol = 10;
                 atol = 2;
                 thresh = 0.5;
-		tic;
 %                 FNN = find(fcnFNN(downsample(tempDataAll(jChan,:),downsampleRate),tao,mmax,rtol,atol) < thresh,1);
-% 		time_FNN = time_FNN + toc;
 %                 if isempty(FNN)
 %                     FNN = nan;
 %                 end
@@ -166,6 +173,7 @@ for iFile = 1:size(myFolderInfo,1)
                 scale = round(2.^exponents);
                 q = linspace(-5,10,5);
                 m = 1;
+		tic;
                 [~, ~, ~, MFDFA, ~] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
                 %% Replace Infand -Inf with NaNs
                 MFDFA(find(MFDFA==Inf)) = NaN;
@@ -173,12 +181,15 @@ for iFile = 1:size(myFolderInfo,1)
                 
                 %% Calculate mean acros non-nan values.
                 MFDFA = nanmean(MFDFA);
+		time_MFDFA = time_MFDFA + toc;
 % 
 %                 % LZ
 %                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
                 
                 % PSVG
+		tic;
                 VG = fcnPSVG(downsample(tempDataAll(jChan,:),downsampleRate)');
+		time_PSVG = time_PSVG + toc;
                 
                 % Store results
                 LE = 0; HFD = 0; MSE = 0; LZ = 0; 
@@ -204,7 +215,8 @@ for iFile = 1:size(myFolderInfo,1)
 
 	% Time stats
 	disp([' CD_PK_v2 timing: ', num2str(time_CD_PK),...
-	      ' FNN timing: ', num2str(time_FNN),...
+	      ' MFDFA timing: ', num2str(time_MFDFA),...
+	      ' PSVG timing: ', num2str(time_PSVG), ...
 	      ' total time: ', num2str(toc(time_tot)),...
 	      ' [secs]'])
         
