@@ -15,5 +15,5 @@ DOWNSAMPLE_RATE=50
 
 # change to "module load MATLAB" on mahuika
 module load MATLAB
-srun matlab -nodisplay -nojvm -nosplash -r "downsampleRate=$DOWNSAMPLE_RATE; STEP_1_Processing_RS_v2; exit"
+srun matlab -nodisplay -nosplash -r "downsampleRate=$DOWNSAMPLE_RATE; STEP_1_Processing_RS_v2; exit"
 

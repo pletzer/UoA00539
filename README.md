@@ -18,7 +18,7 @@ You'll need a RAW file, let's call it x.RAW, which contains EEG signal data (amp
 
 To run the script, type
 ```
-matlab -nodisplay -nojvm -nosplash < STEP_1_Processing_RS_v2.m
+matlab -nodisplay -nosplash < STEP_1_Processing_RS_v2.m
 ```
 This will produce x.xlsx. Open the file to see values for each measure (with some Nans for some false nearest neighbours)
 and print out 
@@ -31,14 +31,14 @@ check nansum:208.0924
 The run time will increase significantly with smaller `downsampleRate` values. The default value is 100. Use any value >= 1 with 1 meaning
 no downsampling. To set `downsampleRate` to 50, for instance, type command:
 ```
- matlab -nodisplay -nojvm -nosplash -r "downsampleRate=50; STEP_1_Processing_RS_v2; exit"
+ matlab -nodisplay -nosplash -r "downsampleRate=50; STEP_1_Processing_RS_v2; exit"
 ``` 
 
 ## Running under Slurm 
 
 ```
 srun --hint=nomultithread --time=00:01:00 --cpus-per-task=10 --ntasks=1 --mem=1G \
-   matlab -nodisplay -nojvm -nosplash -r "downsampleRate=100; STEP_1_Processing_RS_v2; exit"
+   matlab -nodisplay -nosplash -r "downsampleRate=100; STEP_1_Processing_RS_v2; exit"
 ```
 where `cpus-per-task` is the number of threads and `mem` is the total memory. Use
 ```
