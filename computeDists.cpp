@@ -6,7 +6,6 @@
 /**
  * [mn, mx] = computeDists(l2, d, vec, dists);
  */
-
 void mexFunction(int nlhs, mxArray *plhs[], 
                  int nrhs, const mxArray *prhs[]) {
 
@@ -18,7 +17,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   double mn = 0;
   double mx = 0;
-  for( int i = 0; i < l2; ++i) {
+  for(int i = 0; i < l2; ++i) {
     for (int j = 0; j < l2; ++j) {
       double sum = 0;
         for (int k = 0; k < d; ++k) {

@@ -4,7 +4,7 @@
 #include <limits>
 
 /**
- * [mn, mx] = computeDists(l2, d, vec, dists);
+ *[ratio, n] = computeRatio(mn, mx, scales, dists);
  */
 
 void mexFunction(int nlhs, mxArray *plhs[], 
