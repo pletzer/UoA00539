@@ -134,9 +134,6 @@ for iFile = 1:size(myFolderInfo,1)
                 channelVec = 1:size(EEG.chanlocs,2);
             end
 
-	    pc = parcluster('local')
-	    parpool(pc, str2num(getenv('NUM_WORKERS')))
-            
         parfor jChan = 1:size(EEG.chanlocs,2)
             tic;
             
