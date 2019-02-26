@@ -2,6 +2,9 @@
 #include <matrix.h>
 #include <cmath>
 #include <algorithm>
+#ifdef HAS_OPENMP
+#include <omp.h>
+#endif
 
 /**
  * [P, x] = countGraphEdges(y);
@@ -17,7 +20,13 @@ void mexFunction(int nlhs, mxArray *plhs[],
   plhs[0] = mxCreateDoubleMatrix(1, ln, mxREAL);
   double* P = (double*) mxGetPr(plhs[0]);
 
-  for (size_t am1 = 0; am1 < ln; ++am1) {
+#pragma omp parallel default(none) shared(y, P)
+#ifdef HAS_OPENMP
+  if (omp_get_thread_num() == 0)
+         mexPrintf("running countGraphEdges with %d threads\n", omp_get_num_threads());
+#endif
+#pragma omp for schedule(dynamic)
+    for (size_t am1 = 0; am1 < ln; ++am1) {
     float ya = y[am1];
     for (size_t bm1 = am1 + 2; bm1 < ln; ++bm1) {
       float yb = y[bm1];

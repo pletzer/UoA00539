@@ -2,6 +2,9 @@
 #include <matrix.h>
 #include <cmath>
 #include <limits>
+#ifdef HAS_OPENMP
+#include <omp.h>
+#endif
 
 /**
  * [mn, mx] = computeDists(l2, d, vec, dists);
@@ -17,10 +20,16 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   double mn = 0;
   double mx = 0;
+#pragma omp parallel default(none) shared(mn, mx, dists)
+#ifdef HAS_OPENMP
+  if (omp_get_thread_num() == 0) 
+     mexPrintf("running computeDists with %d threads\n", omp_get_num_threads());
+#endif
+#pragma omp for
   for(int i = 0; i < l2; ++i) {
     for (int j = 0; j < l2; ++j) {
       double sum = 0;
-        for (int k = 0; k < d; ++k) {
+      for (int k = 0; k < d; ++k) {
         double vki = vec[k + i*d];
         double vkj = vec[k + j*d];
         double dv = vki - vkj;

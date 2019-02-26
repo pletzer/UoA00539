@@ -8,9 +8,9 @@ warning('off','all')
 addpath(genpath('./'));
 
 %% Compile mex code
-mex('computeDists.cpp', ['COMPFLAGS="$COMPFLAGS -fopenmp"'])
-mex('computeRatio.cpp', ['COMPFLAGS="$COMPFLAGS -fopenmp"'])
-mex('countGraphEdges.cpp', ['COMPFLAGS="$COMPFLAGS -fopenmp"'])
+mex -v computeDists.cpp CXXFLAGS="$CXXFLAGS -fopenmp -O3 -DHAS_OPENMP" LDFLAGS="$LDFLAGS -fopenmp"
+mex computeRatio.cpp CXXFLAGS="$CXXFLAGS -fopenmp -O3 -DHAS_OPENMP" LDFLAGS="$LDFLAGS -fopenmp"
+mex countGraphEdges.cpp CXXFLAGS="$CXXFLAGS -fopenmp -O3 -DHAS_OPENMP" LDFLAGS="$LDFLAGS -fopenmp"
 
 %% Flag indicating number of channels for processing
 % If flag1020 = 1 then we process only 10/20 channels according to p. 7 in HydroCelGSN_10-10.pdf
@@ -135,14 +135,13 @@ for iFile = 1:size(myFolderInfo,1)
             end
 
         parfor jChan = 1:size(EEG.chanlocs,2)
-            tic;
+            %tic;
             
             if sum(channelVec==jChan)==1
                  % Correlation dimension, PK
                 d = 10;
                 
                 tic;
-                
                 [CD, PK, FNNB] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10,0,1); 
 	        time_CD_PK = time_CD_PK + toc;	
 
@@ -176,9 +175,9 @@ for iFile = 1:size(myFolderInfo,1)
                 q=linspace(-5,20,101);
                 m=2;
                 
-         tic;  
+                tic;  
                 [Hq,tq,hq,Dq,Fq] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
-        time_MFDFA = time_MFDFA + toc;
+                time_MFDFA = time_MFDFA + toc;
                 
                 MFDFA = zeros(1,4);
                 MFDFA(1) = Dq(1);
@@ -206,7 +205,7 @@ for iFile = 1:size(myFolderInfo,1)
             if rem(jChan, 10)==0
                 disp([' Channel: ', num2str(jChan)])
             end
-            toc
+            %toc
         end
         
         % Save output to a table
@@ -217,10 +216,10 @@ for iFile = 1:size(myFolderInfo,1)
         disp(['check nansum: ', num2str(nansum(resultMat(:)))])
 
 	% Time stats
-	disp([' CD_PK_v2 timing: ', num2str(time_CD_PK),...
-	      ' MFDFA timing: ', num2str(time_MFDFA),...
-	      ' PSVG timing: ', num2str(time_PSVG), ...
-	      ' total time: ', num2str(toc(time_tot)),...
+	disp([' Timings [s] CD_PK_v2: ', num2str(time_CD_PK),...
+	      ' MFDFA: ', num2str(time_MFDFA),...
+	      ' PSVG: ', num2str(time_PSVG), ...
+	      ' total: ', num2str(toc(time_tot)),...
 	      ' [secs]'])
         
         % Save length of epoch
