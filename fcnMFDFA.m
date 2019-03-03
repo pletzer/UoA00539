@@ -1,7 +1,7 @@
 function [Hq,tq,hq,Dq,Fq] = fcnMFDFA(signal,scale,q,m,Fig)
 % Multifractal detrended fluctuation analysis (MFDFA)
 %
-% [Hq,tq,hq,Dq,Fq]=fcnMFDFA(signal,scale,q,m,Fig);
+% [Hq,tq,hq,Dq,Fq]=MFDFA(signal,scale,q,m,Fig);
 %
 % INPUT PARAMETERS---------------------------------------------------------
 %
@@ -63,7 +63,11 @@ for ns=1:length(scale),
     Fq(q==0,ns)=exp(0.5*mean(log(RMS_scale{ns}.^2)));
 end
 for nq=1:length(q),
-    C = polyfit(log2(scale),log2(Fq(nq,:)),1);
+   % C = polyfit(log2(scale),log2(Fq(nq,:)),1);
+   lwr=3;
+   upr=0;
+   slp=(log2(Fq(nq,end+upr))-log2(Fq(nq,lwr)))/(log2(scale(end+upr))-log2(scale(lwr)));
+    C=[slp  log2(Fq(nq,lwr))-slp*log2(scale(lwr))];
     Hq(nq) = C(1);
     qRegLine{nq} = polyval(C,log2(scale));
 end
