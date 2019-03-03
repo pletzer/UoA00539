@@ -2,7 +2,7 @@ function [Hq,tq,hq,Dq,Fq] = fcnMFDFA(signal,scale,q,m,Fig)
 % Multifractal detrended fluctuation analysis (MFDFA)
 %
 % [Hq,tq,hq,Dq,Fq]=MFDFA(signal,scale,q,m,Fig);
-%
+% 
 % INPUT PARAMETERS---------------------------------------------------------
 %
 % signal:       input signal
