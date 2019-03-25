@@ -41,12 +41,25 @@ myFolderInfo = myFolderInfo(~cellfun('isempty', {myFolderInfo.date}));
 time_CD_PK = 0.;
 time_MFDFA = 0.;
 time_PSVG = 0.;
+availMemKB = [];
+memCounter = 1;
+initMem = get_free_mem();
+mem_CD_PK = initMem;
+mem_MFDFA = initMem;
+mem_PSVG = initMem;
+
+availMemKB(memCounter) = get_free_mem()
+memCounter = memCounter + 1
+
 time_tot = tic;
 
 %% Iterate through available files in the folder
 for iFile = 1:size(myFolderInfo,1)
     disp([' File: ', num2str(iFile), ' ', myFolderInfo(iFile).name])   % File for processing
-    
+   
+    availMemKB(memCounter) = get_free_mem()
+    memCounter = memCounter + 1
+
     %% Read binary simple Netstation file
     filename = myFolderInfo(iFile).name; 
     EEG = pop_readegi(filename, [],[],'auto');
@@ -77,6 +90,9 @@ for iFile = 1:size(myFolderInfo,1)
 
     %% Use for checking consistency of dataset
     EEG = eeg_checkset(EEG);
+
+    availMemKB(memCounter) = get_free_mem()
+    memCounter = memCounter + 1
 
     %% Save dataset; 
     %EEG = pop_saveset( EEG, 'filename',strrep(filename,'.RAW','RS.set'),'filepath',filepathName);
@@ -122,6 +138,9 @@ for iFile = 1:size(myFolderInfo,1)
                 end
             end
 
+	    availMemKB(memCounter) = get_free_mem()
+	    memCounter = memCounter + 1
+
             % Store results in this matrix for parallel processing purposes
             resultMat = zeros(size(EEG.chanlocs,2),12);
             
@@ -134,17 +153,17 @@ for iFile = 1:size(myFolderInfo,1)
                 channelVec = 1:size(EEG.chanlocs,2);
             end
 
-        parfor jChan = 1:size(EEG.chanlocs,2)
+            parfor jChan = 1:size(EEG.chanlocs,2)
             tic;
             
             if sum(channelVec==jChan)==1
                  % Correlation dimension, PK
                 d = 10;
-                
-                tic;
-                
+               
+	        tic;	
                 [CD, PK, FNNB] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10,0,1); 
-	        time_CD_PK = time_CD_PK + toc;	
+	        time_CD_PK = time_CD_PK + toc;
+                mem_CD_PK = initMem - get_free_mem();
 
                 % False nearest neighbors
                 tao = 10;
@@ -175,10 +194,11 @@ for iFile = 1:size(myFolderInfo,1)
                 scale=round(2.^exponents);
                 q=linspace(-5,20,101);
                 m=2;
-                
-         tic;  
+               
+                tic;  
                 [Hq,tq,hq,Dq,Fq] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
-        time_MFDFA = time_MFDFA + toc;
+                time_MFDFA = time_MFDFA + toc;
+		mem_MFDFA = initMem - get_free_mem();
                 
                 MFDFA = zeros(1,4);
                 MFDFA(1) = Dq(1);
@@ -193,6 +213,7 @@ for iFile = 1:size(myFolderInfo,1)
 		tic;
                 VG = fcnPSVG(downsample(tempDataAll(jChan,:),downsampleRate)');
 		time_PSVG = time_PSVG + toc;
+		mem_PSVG = initMem - get_free_mem();
                 
                 % Store results
                 LE = 0; HFD = 0; MSE = 0; LZ = 0; 
@@ -209,6 +230,9 @@ for iFile = 1:size(myFolderInfo,1)
             toc
         end
         
+        availMemKB(memCounter) = get_free_mem()
+        memCounter = memCounter + 1
+
         % Save output to a table
         resultMatT = resultMat';
         tableOutput{iEvent, 4:4 + 129*12 - 1} = resultMatT(:)'; 
@@ -222,6 +246,7 @@ for iFile = 1:size(myFolderInfo,1)
 	      ' PSVG timing: ', num2str(time_PSVG), ...
 	      ' total time: ', num2str(toc(time_tot)),...
 	      ' [secs]'])
+	disp([' CD_PK_v2 KB: ', num2str(mem_CD_PK), ' MFDFA KB: ', num2str(mem_MFDFA), ' PSVG KB: ', num2str(mem_PSVG)])
         
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
@@ -235,7 +260,19 @@ for iFile = 1:size(myFolderInfo,1)
     
     writetable(tableOutput,strrep(filename,'.RAW','RS.xlsx'),'Sheet',1,'Range','A1')
 
+    availMemKB(memCounter) = get_free_mem()
+    memCounter = memCounter + 1
+
+
 end % loop for files
 
 
+availMemKB(memCounter) = get_free_mem()
+memCounter = memCounter + 1
+
+disp('free memory checkpoints in KB')
+disp(availMemKB)
+disp('memory usage in GB')
+usedMemGB = (availMemKB(1) - availMemKB(2:length(availMemKB))) / 1.e6;
+disp(usedMemGB)
 
