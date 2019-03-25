@@ -55,6 +55,7 @@ endInd = min(rmmissing([size(event,2), find(diff(indDIN0)==1) + 1]));
 
 % Create the correct version of event
 ind = 1;
+eventCorrect = zeros(endInd)
 for i=1:endInd
     if (i >= startInd && i <= endInd)
         eventCorrect(ind) = event(i);
