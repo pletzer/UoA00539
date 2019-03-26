@@ -153,13 +153,15 @@ for iFile = 1:size(myFolderInfo,1)
                 channelVec = 1:size(EEG.chanlocs,2);
             end
 
-            parfor jChan = 1:size(EEG.chanlocs,2)
+            %parfor jChan = 1:size(EEG.chanlocs,2)
+	    for jChan = 1:size(EEG.chanlocs,2)
             tic;
             
             if sum(channelVec==jChan)==1
                  % Correlation dimension, PK
                 d = 10;
-               
+            
+	     	disp('fcnCD_PK_v2...')	
 	        tic;	
                 [CD, PK, FNNB] = fcnCD_PK_v2(downsample(tempDataAll(jChan,:),downsampleRate),d,0,1,10,0,1); 
 	        time_CD_PK = time_CD_PK + toc;
@@ -194,7 +196,8 @@ for iFile = 1:size(myFolderInfo,1)
                 scale=round(2.^exponents);
                 q=linspace(-5,20,101);
                 m=2;
-               
+             
+		disp('fcnMFDFA...')
                 tic;  
                 [Hq,tq,hq,Dq,Fq] = fcnMFDFA(downsample(tempDataAll(jChan,:),downsampleRate),scale,q,m,0);
                 time_MFDFA = time_MFDFA + toc;
@@ -210,6 +213,7 @@ for iFile = 1:size(myFolderInfo,1)
 %                 LZ = fcnLZ(tempDataAll(jChan,:) >= median(tempDataAll(jChan,:)));
                 
                 % PSVG
+		disp('fcnPSVG...')
 		tic;
                 VG = fcnPSVG(downsample(tempDataAll(jChan,:),downsampleRate)');
 		time_PSVG = time_PSVG + toc;
@@ -246,7 +250,7 @@ for iFile = 1:size(myFolderInfo,1)
 	      ' PSVG timing: ', num2str(time_PSVG), ...
 	      ' total time: ', num2str(toc(time_tot)),...
 	      ' [secs]'])
-	disp([' CD_PK_v2 KB: ', num2str(mem_CD_PK), ' MFDFA KB: ', num2str(mem_MFDFA), ' PSVG KB: ', num2str(mem_PSVG)])
+	disp([' memory consumption GB CD_PK_v2: ', num2str(mem_CD_PK/1.e6), ' MFDFA: ', num2str(mem_MFDFA/1.e6), ' PSVG: ', num2str(mem_PSVG/1.e6)])
         
         % Save length of epoch
         tableOutput(iEvent, 'Epoch_length') = {size(tempDataAll,2)}; 
